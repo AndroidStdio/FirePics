@@ -225,6 +225,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (recyclerAdapter != null) {
+            recyclerAdapter.cleanup();
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
