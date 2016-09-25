@@ -21,14 +21,9 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,17 +46,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
+import pl.aprilapps.easyphotopicker.EasyImage;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Activity to upload and download photos from Firebase Storage.
- *
+ * <p>
  * See {@link MyUploadService} for upload example.
  * See {@link MyDownloadService} for download example.
  */
@@ -128,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //RecyclerView
         gridLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerAdapter= new MyFirebaseRecyclerAdapter(String.class,R.layout.recycler_image,ImageViewHolder.class,databaseReference,this);
+        recyclerAdapter = new MyFirebaseRecyclerAdapter(String.class, R.layout.recycler_image, ImageViewHolder.class, databaseReference, this);
         recyclerView.setAdapter(recyclerAdapter);
         //Scroll to bottom on new image.
         recyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -226,16 +219,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
-        if (requestCode == RC_TAKE_PICTURE) {
-            if (resultCode == RESULT_OK) {
-                if (mFileUri != null) {
-                    uploadFromUri(mFileUri);
-                } else {
-                    Log.w(TAG, "File URI is null");
-                }
-            } else {
-                Toast.makeText(this, "Taking picture failed.", Toast.LENGTH_SHORT).show();
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                Toast.makeText(MainActivity.this, "Loading picture failed.", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
+                onPhotoReturned(imageFile);
+            }
+
+            @Override
+            public void onCanceled(EasyImage.ImageSource source, int type) {
+//Cancel handling, you might wanna remove taken photo if it was canceled
+                if (source == EasyImage.ImageSource.CAMERA) {
+                    File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
+                    if (photoFile != null) {
+                        photoFile.delete();
+                    }
+                }
+            }
+        });
+    }
+
+    private void onPhotoReturned(File imageFile) {
+        mFileUri = Uri.fromFile(imageFile);
+        if (mFileUri != null) {
+            uploadFromUri(mFileUri);
+        } else {
+            Log.w(TAG, "File URI is null");
         }
     }
 
@@ -281,41 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     RC_STORAGE_PERMS, perm);
             return;
         }
-
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            boolean created = file.createNewFile();
-            Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
-        } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
-        }
-
-        // Create content:// URI for file, required since Android N
-        // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
-        mFileUri = FileProvider.getUriForFile(this,
-                "com.google.firebase.quickstart.firebasestorage.fileprovider", file);
-
-        // Create and launch the intent
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
-
-        // Grant permission to camera (this is required on KitKat and below)
-        List<ResolveInfo> resolveInfos = getPackageManager()
-                .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo resolveInfo : resolveInfos) {
-            String packageName = resolveInfo.activityInfo.packageName;
-            grantUriPermission(packageName, mFileUri,
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-
-        // Start picture-taking intent
-        startActivityForResult(takePictureIntent, RC_TAKE_PICTURE);
+        EasyImage.openChooserWithDocuments(this, "Pick image...", 1);
     }
 
     private void signInAnonymously() {
