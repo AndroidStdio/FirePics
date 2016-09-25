@@ -6,26 +6,54 @@
     android:layout_height="match_parent"
     tools:context="com.google.firebase.quickstart.firebasestorage.MainActivity">
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-<android.support.design.widget.AppBarLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:elevation="8dp">
-    <ImageView
-        android:id="@+id/firebase_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:layout_marginBottom="@dimen/margin_2"
-        android:contentDescription="@string/firebase_logo"
-        android:src="@drawable/firebase_lockup_400"
-        app:layout_scrollFlags="scroll|enterAlways" />
-</android.support.design.widget.AppBarLayout>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="128dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+            <ImageView
+                android:id="@+id/firebase_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|center"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:contentDescription="@string/firebase_logo"
+                android:src="@drawable/firebase_lockup_400" />
+
+            <TextView
+                android:id="@+id/greet_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="8dp"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@android:color/primary_text_dark"
+                tools:text="@string/welcome" />
+        </FrameLayout>
+    </android.support.design.widget.AppBarLayout>
 
 
     <android.support.design.widget.FloatingActionButton
