@@ -38,6 +38,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private GridLayoutManager gridLayoutManager;
     private MyFirebaseRecyclerAdapter recyclerAdapter;
+    private ProgressBar progressBar;
 
     //Firebase Auth Providers
     private FirebaseAuth mAuth;
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Click listeners
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         findViewById(R.id.button_camera).setOnClickListener(this);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         //RecyclerView
         gridLayoutManager = new GridLayoutManager(this, 3);
@@ -132,6 +135,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 recyclerView.smoothScrollToPosition(recyclerAdapter.getItemCount());
+                if (progressBar.getVisibility() == View.VISIBLE) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
