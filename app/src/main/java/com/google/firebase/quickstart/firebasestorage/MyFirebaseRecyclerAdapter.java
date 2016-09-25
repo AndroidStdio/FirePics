@@ -1,10 +1,7 @@
 package com.google.firebase.quickstart.firebasestorage;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,7 +21,7 @@ public class MyFirebaseRecyclerAdapter extends FirebaseRecyclerAdapter<String,Im
 
     @Override
     protected void populateViewHolder(ImageViewHolder viewHolder, String model, int position) {
-        Glide.with(context).load(model).placeholder(R.drawable.firebase_lockup_400).into(viewHolder.imageView);
+        Glide.with(context).load(model).placeholder(R.drawable.default_placeholder).into(viewHolder.imageView);
         Log.d(TAG, "populateViewHolder: "+model);
     }
 }
