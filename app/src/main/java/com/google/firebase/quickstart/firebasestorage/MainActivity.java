@@ -365,7 +365,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int i = item.getItemId();
         if (i == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
-            updateUI(null);
+            finish();
+            startActivity(new Intent(this, SignInActivity.class));
             return true;
         } else {
             return super.onOptionsItemSelected(item);
