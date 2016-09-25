@@ -32,9 +32,11 @@ public class MyFirebaseRecyclerAdapter extends FirebaseRecyclerAdapter<String,Im
         viewHolder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                //delete file from storage.
                 FirebaseStorage.getInstance().getReferenceFromUrl(model).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        //delete file reference from database.
                         getRef(viewHolder.getAdapterPosition()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
