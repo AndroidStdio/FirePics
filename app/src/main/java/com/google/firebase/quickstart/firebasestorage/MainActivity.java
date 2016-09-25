@@ -124,6 +124,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //RecyclerView
         gridLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerAdapter = new MyFirebaseRecyclerAdapter(String.class, R.layout.recycler_image, ImageViewHolder.class, databaseReference, this);
+        recyclerView.setAdapter(recyclerAdapter);
+
+
+        //check is data exists
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -138,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 databaseError.toException().printStackTrace();
             }
         });
-        recyclerAdapter = new MyFirebaseRecyclerAdapter(String.class, R.layout.recycler_image, ImageViewHolder.class, databaseReference, this);
-        recyclerView.setAdapter(recyclerAdapter);
+
+
         //Scroll to bottom on new image.
         recyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
