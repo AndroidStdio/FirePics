@@ -38,6 +38,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -102,7 +103,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();
             return;
         } else {
-            Toast.makeText(this, "Welcome " + mUser.getDisplayName() + "!", Toast.LENGTH_SHORT).show();
+            //Set first name on greeting text.
+            TextView textView = (TextView) findViewById(R.id.greet_text);
+            if (mUser.getDisplayName() != null) {
+                String name = mUser.getDisplayName();
+                if (name.indexOf(' ') != -1) {
+                    name = name.substring(0, name.indexOf(' '));
+                }
+                textView.setText(String.format(getString(R.string.welcome), name));
+            }
         }
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference()
