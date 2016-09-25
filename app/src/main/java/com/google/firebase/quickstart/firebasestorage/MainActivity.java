@@ -118,6 +118,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerAdapter= new MyFirebaseRecyclerAdapter(String.class,R.layout.recycler_image,ImageViewHolder.class,databaseReference,this);
         recyclerView.setAdapter(recyclerAdapter);
+        //Scroll to bottom on new image.
+        recyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                recyclerView.smoothScrollToPosition(recyclerAdapter.getItemCount());
+            }
+        });
 
         // Restore instance state
         if (savedInstanceState != null) {
