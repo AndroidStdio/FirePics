@@ -101,15 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();
             return;
         } else {
-            //Set first name on greeting text.
-            TextView textView = (TextView) findViewById(R.id.greet_text);
-            if (mUser.getDisplayName() != null) {
-                String name = mUser.getDisplayName();
-                if (name.indexOf(' ') != -1) {
-                    name = name.substring(0, name.indexOf(' '));
-                }
-                textView.setText(String.format(getString(R.string.welcome), name));
-            }
+            updateUI(mUser);
         }
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference()
@@ -358,6 +350,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateUI(FirebaseUser user) {
+        //Set first name on greeting text.
+        TextView textView = (TextView) findViewById(R.id.greet_text);
+        if (user.getDisplayName() != null) {
+            String name = user.getDisplayName();
+            if (name.indexOf(' ') != -1) {
+                name = name.substring(0, name.indexOf(' '));
+            }
+            textView.setText(String.format(getString(R.string.welcome), name));
+        }
     }
 
     private void showMessageDialog(String title, String message) {
